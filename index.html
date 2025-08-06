@@ -37,14 +37,46 @@
                     </div>
                     
                     <label for="imageFitMode" class="dropdown-label">Image Fit Mode:</label>
-                    <select id="imageFitMode" class="dropdown-select">
-                        <option value="fill">stretch</option>
-                        <option value="contain">fit</option>
-                        <option value="cover">fill</option>
-                        <option value="debug-corners">corner stretch</option>
-                        <option value="background">single stretch</option>
-
-                    </select>
+                    <div class="custom-dropdown" id="imageFitModeDropdown">
+                        <div class="dropdown-trigger" data-value="fill">
+                            <span class="dropdown-text">stretch</span>
+                            <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8">
+                                <path fill="currentColor" d="M6 8L0 0h12z"/>
+                            </svg>
+                        </div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-option" data-value="fill">
+                                <span>stretch</span>
+                                <svg class="dropdown-check" width="14" height="10" viewBox="0 0 14 10">
+                                    <path fill="currentColor" d="M13 1L5 9 1 5"/>
+                                </svg>
+                            </div>
+                            <div class="dropdown-option" data-value="contain">
+                                <span>fit</span>
+                                <svg class="dropdown-check" width="14" height="10" viewBox="0 0 14 10">
+                                    <path fill="currentColor" d="M13 1L5 9 1 5"/>
+                                </svg>
+                            </div>
+                            <div class="dropdown-option" data-value="cover">
+                                <span>fill</span>
+                                <svg class="dropdown-check" width="14" height="10" viewBox="0 0 14 10">
+                                    <path fill="currentColor" d="M13 1L5 9 1 5"/>
+                                </svg>
+                            </div>
+                            <div class="dropdown-option" data-value="debug-corners">
+                                <span>corner stretch</span>
+                                <svg class="dropdown-check" width="14" height="10" viewBox="0 0 14 10">
+                                    <path fill="currentColor" d="M13 1L5 9 1 5"/>
+                                </svg>
+                            </div>
+                            <div class="dropdown-option" data-value="background">
+                                <span>single stretch</span>
+                                <svg class="dropdown-check" width="14" height="10" viewBox="0 0 14 10">
+                                    <path fill="currentColor" d="M13 1L5 9 1 5"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="controls-section">
@@ -55,15 +87,15 @@
                         <h4>Grid Structure</h4>
                         <div class="grid-control-row">
                             <label>Columns:</label>
-                            <button class="grid-btn" id="removeColumnBtn" onclick="window.imageGridManager.removeColumn()">-</button>
+                            <button class="grid-btn" id="removeColumnBtn" onclick="window.imageGridManager && window.imageGridManager.removeColumn()">-</button>
                             <span id="columnCount">3</span>
-                            <button class="grid-btn" id="addColumnBtn" onclick="window.imageGridManager.addColumn()">+</button>
+                            <button class="grid-btn" id="addColumnBtn" onclick="window.imageGridManager && window.imageGridManager.addColumn()">+</button>
                         </div>
                         <div class="grid-control-row">
                             <label>Rows:</label>
-                            <button class="grid-btn" id="removeRowBtn" onclick="window.imageGridManager.removeRow()">-</button>
+                            <button class="grid-btn" id="removeRowBtn" onclick="window.imageGridManager && window.imageGridManager.removeRow()">-</button>
                             <span id="rowCount">3</span>
-                            <button class="grid-btn" id="addRowBtn" onclick="window.imageGridManager.addRow()">+</button>
+                            <button class="grid-btn" id="addRowBtn" onclick="window.imageGridManager && window.imageGridManager.addRow()">+</button>
                         </div>
                         <div class="grid-control-row">
                             <label for="showSplitters">Show Dividers:</label>
@@ -107,6 +139,41 @@
                     
                     <div class="canvas-controls">
                         <h4>Canvas Size</h4>
+                        <label for="canvasSizePreset" class="dropdown-label">Preset:</label>
+                        <div class="custom-dropdown dropdown-up" id="canvasSizePresetDropdown">
+                            <div class="dropdown-trigger" data-value="custom">
+                                <span class="dropdown-text">Custom</span>
+                                <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8">
+                                    <path fill="currentColor" d="M6 8L0 0h12z"/>
+                                </svg>
+                            </div>
+                            <div class="dropdown-menu">
+                                <div class="dropdown-option" data-value="custom">
+                                    <span>Custom</span>
+                                    <svg class="dropdown-check" width="14" height="10" viewBox="0 0 14 10">
+                                        <path fill="currentColor" d="M13 1L5 9 1 5"/>
+                                    </svg>
+                                </div>
+                                <div class="dropdown-option" data-value="ig-post">
+                                    <span>IG Post (1080×1350)</span>
+                                    <svg class="dropdown-check" width="14" height="10" viewBox="0 0 14 10">
+                                        <path fill="currentColor" d="M13 1L5 9 1 5"/>
+                                    </svg>
+                                </div>
+                                <div class="dropdown-option" data-value="ig-reel">
+                                    <span>IG Reel (1080×1920)</span>
+                                    <svg class="dropdown-check" width="14" height="10" viewBox="0 0 14 10">
+                                        <path fill="currentColor" d="M13 1L5 9 1 5"/>
+                                    </svg>
+                                </div>
+                                <div class="dropdown-option" data-value="wide-hd">
+                                    <span>Wide HD (1920×1080)</span>
+                                    <svg class="dropdown-check" width="14" height="10" viewBox="0 0 14 10">
+                                        <path fill="currentColor" d="M13 1L5 9 1 5"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
                         <div class="canvas-control-row">
                             <label for="canvasWidth">Width:</label>
                             <input type="text" id="canvasWidth" value="800" class="size-input">

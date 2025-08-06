@@ -722,7 +722,141 @@ function hslToRgb(h, s, l) {
     return [f(0), f(8), f(4)];
 }
 
-// Initialize tab system when DOM loads
+// Custom Dropdown Component
+class CustomDropdown {
+    constructor(element) {
+        this.element = element;
+        this.trigger = element.querySelector('.dropdown-trigger');
+        this.menu = element.querySelector('.dropdown-menu');
+        this.options = element.querySelectorAll('.dropdown-option');
+        this.isOpen = false;
+        
+        this.init();
+    }
+    
+    init() {
+        // Handle trigger click
+        this.trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggle();
+        });
+        
+        // Handle option selection
+        this.options.forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const value = option.getAttribute('data-value');
+                const text = option.querySelector('span').textContent;
+                this.select(value, text);
+            });
+        });
+        
+        // Close on outside click
+        document.addEventListener('click', () => {
+            this.close();
+        });
+        
+        // Prevent menu clicks from closing
+        this.menu.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+        
+        // Keyboard support
+        this.trigger.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.toggle();
+            } else if (e.key === 'Escape') {
+                this.close();
+            }
+        });
+        
+        // Set initial selected state
+        const initialValue = this.trigger.getAttribute('data-value');
+        this.updateSelectedState(initialValue);
+    }
+    
+    toggle() {
+        if (this.isOpen) {
+            this.close();
+        } else {
+            this.open();
+        }
+    }
+    
+    open() {
+        // Close other dropdowns
+        document.querySelectorAll('.custom-dropdown.open').forEach(dropdown => {
+            if (dropdown !== this.element) {
+                dropdown.classList.remove('open');
+            }
+        });
+        
+        this.element.classList.add('open');
+        this.isOpen = true;
+        
+        // Focus management
+        this.trigger.setAttribute('aria-expanded', 'true');
+    }
+    
+    close() {
+        this.element.classList.remove('open');
+        this.isOpen = false;
+        this.trigger.setAttribute('aria-expanded', 'false');
+    }
+    
+    select(value, text) {
+        // Update trigger
+        this.trigger.setAttribute('data-value', value);
+        this.trigger.querySelector('.dropdown-text').textContent = text;
+        
+        // Update selected state
+        this.updateSelectedState(value);
+        
+        // Close dropdown
+        this.close();
+        
+        // Dispatch change event
+        const changeEvent = new CustomEvent('change', {
+            detail: { value, text },
+            bubbles: true
+        });
+        this.element.dispatchEvent(changeEvent);
+    }
+    
+    updateSelectedState(selectedValue) {
+        this.options.forEach(option => {
+            const value = option.getAttribute('data-value');
+            if (value === selectedValue) {
+                option.classList.add('selected');
+            } else {
+                option.classList.remove('selected');
+            }
+        });
+    }
+    
+    getValue() {
+        return this.trigger.getAttribute('data-value');
+    }
+    
+    setValue(value) {
+        const option = this.element.querySelector(`[data-value="${value}"]`);
+        if (option) {
+            const text = option.querySelector('span').textContent;
+            this.select(value, text);
+        }
+    }
+}
+
+// Initialize dropdowns when DOM loads
+function initializeCustomDropdowns() {
+    document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
+        new CustomDropdown(dropdown);
+    });
+}
+
+// Initialize tab system and dropdowns when DOM loads
 document.addEventListener('DOMContentLoaded', () => {
     window.tabManager = new TabManager();
+    initializeCustomDropdowns();
 }); 

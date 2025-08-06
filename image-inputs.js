@@ -73,7 +73,7 @@ class ImageGridManager extends BaseGridManager {
     }
     
     setupImageFitModeDropdown() {
-        const imageFitMode = document.getElementById('imageFitMode');
+        const imageFitModeDropdown = document.getElementById('imageFitModeDropdown');
         
         // Store all possible options for restoration
         this.allFitModeOptions = [
@@ -82,7 +82,6 @@ class ImageGridManager extends BaseGridManager {
             { value: 'cover', text: 'fill' },
             { value: 'debug-corners', text: 'corner stretch' },
             { value: 'background', text: 'single stretch' },
-
         ];
         
         // Options allowed when sequence is active (hide corner stretch)
@@ -93,41 +92,59 @@ class ImageGridManager extends BaseGridManager {
             { value: 'background', text: 'single stretch' }
         ];
         
-        // Set up change handler
-        imageFitMode.addEventListener('change', (e) => {
-            this.setImageFitMode(e.target.value);
+        // Set up change handler for custom dropdown
+        imageFitModeDropdown.addEventListener('change', (e) => {
+            this.setImageFitMode(e.detail.value);
         });
+        
+        // Store reference to custom dropdown for later access
+        this.imageFitModeDropdown = imageFitModeDropdown;
         
         // Initialize with full options
         this.updateFitModeDropdown(false);
     }
     
     updateFitModeDropdown(hasSequence) {
-        const imageFitMode = document.getElementById('imageFitMode');
-        const currentValue = imageFitMode.value;
+        // This function is now simplified since we use a static custom dropdown
+        // We can hide/show options by adding/removing classes instead of rebuilding
         
-        // Clear existing options
-        imageFitMode.innerHTML = '';
+        const imageFitModeDropdown = this.imageFitModeDropdown;
+        const currentValue = imageFitModeDropdown.querySelector('.dropdown-trigger').getAttribute('data-value');
         
         // Choose which options to show
         const optionsToShow = hasSequence ? this.sequenceFitModeOptions : this.allFitModeOptions;
+        const allowedValues = optionsToShow.map(option => option.value);
         
-        // Add options
-        optionsToShow.forEach(option => {
-            const optionElement = document.createElement('option');
-            optionElement.value = option.value;
-            optionElement.textContent = option.text;
-            imageFitMode.appendChild(optionElement);
+        // Show/hide options based on sequence mode
+        imageFitModeDropdown.querySelectorAll('.dropdown-option').forEach(option => {
+            const value = option.getAttribute('data-value');
+            if (allowedValues.includes(value)) {
+                option.style.display = 'flex';
+            } else {
+                option.style.display = 'none';
+            }
         });
         
-        // Try to maintain current selection if still available
-        if (optionsToShow.some(option => option.value === currentValue)) {
-            imageFitMode.value = currentValue;
-        } else {
-            // If current mode is not available, switch to first available option
-            imageFitMode.value = optionsToShow[0].value;
-            // Apply the new mode immediately
-            this.setImageFitMode(imageFitMode.value);
+        // Check if current selection is still available
+        if (!allowedValues.includes(currentValue)) {
+            // Switch to first available option
+            const firstOption = optionsToShow[0];
+            const trigger = imageFitModeDropdown.querySelector('.dropdown-trigger');
+            const option = imageFitModeDropdown.querySelector(`[data-value="${firstOption.value}"]`);
+            
+            if (trigger && option) {
+                trigger.setAttribute('data-value', firstOption.value);
+                trigger.querySelector('.dropdown-text').textContent = firstOption.text;
+                
+                // Update selected state
+                imageFitModeDropdown.querySelectorAll('.dropdown-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                option.classList.add('selected');
+                
+                // Apply the new mode immediately
+                this.setImageFitMode(firstOption.value);
+            }
         }
         
         console.log(`Fit mode dropdown updated for ${hasSequence ? 'sequence' : 'single image'} mode`);
@@ -224,7 +241,7 @@ class ImageGridManager extends BaseGridManager {
             this.updateSplitterPositions();
             
             // Apply the current fit mode after loading the image
-            const currentFitMode = document.getElementById('imageFitMode').value;
+            const currentFitMode = this.getCurrentFitMode();
             this.setImageFitMode(currentFitMode);
         }, 100);
         
@@ -455,7 +472,7 @@ class ImageGridManager extends BaseGridManager {
         this.currentImageDataUrl = dataUrl;
         this.isUsingDefaultImage = false;
         
-        const currentFitMode = document.getElementById('imageFitMode').value;
+        const currentFitMode = this.getCurrentFitMode();
         
         // For heavy modes during sequence playback, only apply if we haven't cached this exact frame + mode combo
         if (['debug-corners', 'background'].includes(currentFitMode)) {
@@ -1351,7 +1368,6 @@ class ImageGridManager extends BaseGridManager {
     
     setupGridControls() {
         const clearAllBtn = document.getElementById('clearAllBtn');
-        const imageFitModeSelect = document.getElementById('imageFitMode');
         const showSplittersCheckbox = document.getElementById('showSplitters');
         
         clearAllBtn.addEventListener('click', () => {
@@ -1370,13 +1386,45 @@ class ImageGridManager extends BaseGridManager {
     setupCanvasSizeControls() {
         const canvasWidthInput = document.getElementById('canvasWidth');
         const canvasHeightInput = document.getElementById('canvasHeight');
+        const canvasSizePreset = document.getElementById('canvasSizePresetDropdown');
         
-        // Auto-apply size changes when inputs change
+        // Define canvas size presets
+        this.canvasSizePresets = {
+            'custom': { width: null, height: null },
+            'ig-post': { width: 1080, height: 1350 },
+            'ig-reel': { width: 1080, height: 1920 },
+            'wide-hd': { width: 1920, height: 1080 }
+        };
+        
+        // Track if we're programmatically updating inputs to avoid triggering custom mode
+        this.isUpdatingInputsFromPreset = false;
+        
+        // Handle preset selection
+        canvasSizePreset.addEventListener('change', (e) => {
+            const presetKey = e.detail.value;
+            const preset = this.canvasSizePresets[presetKey];
+            
+            if (presetKey !== 'custom' && preset) {
+                this.isUpdatingInputsFromPreset = true;
+                canvasWidthInput.value = preset.width;
+                canvasHeightInput.value = preset.height;
+                this.updateCanvasSize(preset.width, preset.height);
+                this.isUpdatingInputsFromPreset = false;
+                console.log(`Applied preset: ${presetKey} (${preset.width}×${preset.height})`);
+            }
+        });
+        
+        // Auto-apply size changes when inputs change and detect custom mode
         [canvasWidthInput, canvasHeightInput].forEach(input => {
             input.addEventListener('input', () => {
                 const width = parseInt(canvasWidthInput.value) || 800;
                 const height = parseInt(canvasHeightInput.value) || 600;
                 this.updateCanvasSize(width, height);
+                
+                // Check if current values match any preset, if not switch to custom
+                if (!this.isUpdatingInputsFromPreset) {
+                    this.detectAndUpdatePresetSelection(width, height);
+                }
             });
             
             input.addEventListener('keypress', (e) => {
@@ -1384,9 +1432,62 @@ class ImageGridManager extends BaseGridManager {
                     const width = parseInt(canvasWidthInput.value) || 800;
                     const height = parseInt(canvasHeightInput.value) || 600;
                     this.updateCanvasSize(width, height);
+                    
+                    if (!this.isUpdatingInputsFromPreset) {
+                        this.detectAndUpdatePresetSelection(width, height);
+                    }
                 }
             });
         });
+        
+        // Initialize preset selection based on current values
+        const currentWidth = parseInt(canvasWidthInput.value);
+        const currentHeight = parseInt(canvasHeightInput.value);
+        this.detectAndUpdatePresetSelection(currentWidth, currentHeight);
+    }
+    
+    detectAndUpdatePresetSelection(width, height) {
+        const canvasSizePreset = document.getElementById('canvasSizePresetDropdown');
+        
+        // Check if current dimensions match any preset
+        let matchingPreset = 'custom';
+        for (const [key, preset] of Object.entries(this.canvasSizePresets)) {
+            if (key !== 'custom' && preset.width === width && preset.height === height) {
+                matchingPreset = key;
+                break;
+            }
+        }
+        
+        // Get current value from custom dropdown
+        const currentValue = canvasSizePreset.querySelector('.dropdown-trigger').getAttribute('data-value');
+        
+        // Update dropdown if it doesn't match current selection
+        if (currentValue !== matchingPreset) {
+            // Find the custom dropdown instance and update it
+            const customDropdownInstance = canvasSizePreset.customDropdownInstance || 
+                Array.from(document.querySelectorAll('.custom-dropdown')).find(dropdown => dropdown === canvasSizePreset);
+            
+            if (customDropdownInstance) {
+                // Update trigger value and text
+                const trigger = canvasSizePreset.querySelector('.dropdown-trigger');
+                const option = canvasSizePreset.querySelector(`[data-value="${matchingPreset}"]`);
+                if (option && trigger) {
+                    const text = option.querySelector('span').textContent;
+                    trigger.setAttribute('data-value', matchingPreset);
+                    trigger.querySelector('.dropdown-text').textContent = text;
+                    
+                    // Update selected state
+                    canvasSizePreset.querySelectorAll('.dropdown-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    option.classList.add('selected');
+                }
+            }
+            
+            if (matchingPreset === 'custom') {
+                console.log(`Switched to custom size: ${width}×${height}`);
+            }
+        }
     }
     
     setupAnimationControls() {
@@ -1512,11 +1613,20 @@ class ImageGridManager extends BaseGridManager {
         removeRowBtn.disabled = this.rowSizes.length <= 1;
     }
     
+    getCurrentFitMode() {
+        const dropdown = document.getElementById('imageFitModeDropdown');
+        if (dropdown) {
+            const trigger = dropdown.querySelector('.dropdown-trigger');
+            return trigger ? trigger.getAttribute('data-value') : 'fill';
+        }
+        return 'fill'; // fallback
+    }
+    
     updateGridStructure() {
         // Clear image processing cache when grid structure changes
         this.processedImageCache.clear();
         
-        const currentFitMode = document.getElementById('imageFitMode').value;
+        const currentFitMode = this.getCurrentFitMode();
         
         document.documentElement.style.setProperty('--grid-columns', this.columnSizes.length);
         document.documentElement.style.setProperty('--grid-rows', this.rowSizes.length);
