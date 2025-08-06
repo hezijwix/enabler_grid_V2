@@ -647,69 +647,7 @@ class BaseGridManager {
     }
 }
 
-// Tab System
-class TabManager {
-    constructor() {
-        this.tabs = new Map();
-        this.activeTab = null;
-        this.init();
-    }
-    
-    init() {
-        const tabButtons = document.querySelectorAll('.tab-btn');
-        const tabContents = document.querySelectorAll('.tab-content');
-        
-        tabButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                const targetTab = button.getAttribute('data-tab');
-                this.switchTab(targetTab);
-            });
-        });
-        
-        // Set initial active tab
-        const activeButton = document.querySelector('.tab-btn.active');
-        if (activeButton) {
-            this.activeTab = activeButton.getAttribute('data-tab');
-        }
-    }
-    
-    switchTab(tabId) {
-        // Remove active class from all buttons and contents
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-        
-        // Add active class to clicked button and corresponding content
-        const targetButton = document.querySelector(`[data-tab="${tabId}"]`);
-        const targetContent = document.getElementById(tabId);
-        
-        if (targetButton && targetContent) {
-            targetButton.classList.add('active');
-            targetContent.classList.add('active');
-            this.activeTab = tabId;
-            
-            // Trigger tab-specific initialization if needed
-            this.onTabSwitch(tabId);
-        }
-    }
-    
-    onTabSwitch(tabId) {
-        // Hook for tab-specific initialization
-        if (this.tabs.has(tabId)) {
-            const tabInstance = this.tabs.get(tabId);
-            if (tabInstance.onActivate) {
-                tabInstance.onActivate();
-            }
-        }
-    }
-    
-    registerTab(tabId, instance) {
-        this.tabs.set(tabId, instance);
-    }
-    
-    getActiveTab() {
-        return this.activeTab;
-    }
-}
+
 
 // Utility functions
 function hslToRgb(h, s, l) {
@@ -855,8 +793,7 @@ function initializeCustomDropdowns() {
     });
 }
 
-// Initialize tab system and dropdowns when DOM loads
+// Initialize dropdowns when DOM loads
 document.addEventListener('DOMContentLoaded', () => {
-    window.tabManager = new TabManager();
     initializeCustomDropdowns();
 }); 

@@ -2104,5 +2104,4 @@ class ImageGridManager extends BaseGridManager {
 document.addEventListener('DOMContentLoaded', () => {
     const imageGridManager = new ImageGridManager();
     window.imageGridManager = imageGridManager; // Make globally available for onclick
-    window.tabManager.registerTab('image-inputs', imageGridManager);
 }); 
