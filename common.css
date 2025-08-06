@@ -121,7 +121,7 @@ body {
     width: var(--side-panel-width);
     background-color: var(--side-panel-bg);
     color: var(--side-panel-text);
-    padding: 24px 20px;
+    padding: 24px 20px 80px 20px;
     overflow-y: auto;
     overflow-x: hidden;
     border-right: 1px solid var(--side-panel-border);
@@ -225,17 +225,14 @@ body {
     padding-top: 24px;
 }
 
-/* Grid Controls */
-.grid-controls {
-    margin-bottom: 24px;
-    padding: 16px;
-    background-color: rgba(255, 255, 255, 0.01);
-    border-radius: 2px;
-    border: 1px solid var(--border-color-subtle);
-    width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
+/* Section divider styling */
+.section-divider {
+    border-top: 1px solid var(--border-color);
+    padding-top: 24px;
+    margin-top: 24px;
 }
+
+/* Grid Controls */
 
 .grid-control-row {
     display: flex;
@@ -420,16 +417,6 @@ body.dragging .splitter.dragging {
 }
 
 /* Animation Controls */
-.animation-controls {
-    margin-bottom: 24px;
-    padding: 16px;
-    background-color: rgba(255, 255, 255, 0.01);
-    border-radius: 2px;
-    border: 1px solid var(--border-color-subtle);
-    width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
-}
 
 /* Common animation control row styling */
 .animation-control-row {
@@ -622,16 +609,6 @@ body.dragging .splitter.dragging {
 }
 
 /* Canvas Size Controls */
-.canvas-controls {
-    margin-bottom: 24px;
-    padding: 16px;
-    background-color: rgba(255, 255, 255, 0.01);
-    border-radius: 2px;
-    border: 1px solid var(--border-color-subtle);
-    width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
-}
 
 .canvas-control-row {
     display: flex;
@@ -701,11 +678,11 @@ body.dragging .splitter.dragging {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 12px 16px;
+    padding: 10px 14px;
     background-color: var(--bg-tertiary);
     color: var(--text-color);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 2px;
     cursor: pointer;
     font-size: 11px;
     font-weight: 400;
@@ -750,14 +727,16 @@ body.dragging .splitter.dragging {
     right: 0;
     background-color: var(--bg-tertiary);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 2px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    z-index: 1000;
+    z-index: 99999;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-8px);
     transition: all 0.15s ease;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 200px;
     margin-top: 4px;
 }
 
@@ -771,7 +750,7 @@ body.dragging .splitter.dragging {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px;
+    padding: 10px 14px;
     cursor: pointer;
     font-size: 11px;
     font-weight: 400;
@@ -811,10 +790,20 @@ body.dragging .splitter.dragging {
     top: auto;
     margin-bottom: 4px;
     margin-top: 0;
+    z-index: 99999;
 }
 
 .custom-dropdown.dropdown-up .dropdown-arrow {
     transform: rotate(180deg);
+}
+
+/* Canvas preset dropdown styling */
+#canvasSizePresetDropdown {
+    position: relative;
+}
+
+#canvasSizePresetDropdown .dropdown-menu {
+    z-index: 99999;
 }
 
 /* Legacy dropdown select (fallback) */
@@ -855,27 +844,27 @@ body.dragging .splitter.dragging {
 }
 
 /* Splitter visibility control */
-#image-inputs .grid-container.hide-splitters .splitter {
+.grid-container.hide-splitters .splitter {
     display: none !important;
 }
 
-#image-inputs .grid-container.hide-splitters .splitter:hover {
+.grid-container.hide-splitters .splitter:hover {
     display: none !important;
 }
 
 /* Hide all grid lines when splitters are hidden */
-#image-inputs .grid-container.hide-splitters {
+.grid-container.hide-splitters {
     border: none !important;
     gap: 0 !important; /* Ensure no gaps between cells */
 }
 
-#image-inputs .grid-container.hide-splitters .grid-item {
+.grid-container.hide-splitters .grid-item {
     border: none !important;
     margin: 0 !important; /* Ensure no margins */
     padding: 0 !important; /* Ensure no padding */
 }
 
-#image-inputs .grid-container.hide-splitters .cell-content {
+.grid-container.hide-splitters .cell-content {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
@@ -883,12 +872,12 @@ body.dragging .splitter.dragging {
 }
 
 /* Ensure images fill complete cell area when borders are hidden */
-#image-inputs .grid-container.hide-splitters .image-wrapper {
+.grid-container.hide-splitters .image-wrapper {
     margin: 0 !important;
     padding: 0 !important;
 }
 
-#image-inputs .grid-container.hide-splitters .image-wrapper img {
+.grid-container.hide-splitters .image-wrapper img {
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
@@ -916,16 +905,6 @@ body.dragging .splitter.dragging {
 }
 
 /* Export Controls */
-.export-controls {
-    margin-bottom: 24px;
-    padding: 16px;
-    background-color: rgba(255, 255, 255, 0.01);
-    border-radius: 2px;
-    border: 1px solid var(--border-color-subtle);
-    width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
-}
 
 .export-btn {
     background-color: var(--button-primary);

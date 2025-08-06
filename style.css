@@ -111,12 +111,7 @@ body {
     padding-top: 20px;
 }
 
-.grid-controls {
-    margin-bottom: 20px;
-    padding: 15px;
-    background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 5px;
-}
+
 
 .grid-control-row {
     display: flex;
@@ -403,12 +398,7 @@ body.dragging .splitter.dragging {
     padding: 8px;
 }
 
-.animation-controls {
-    margin-bottom: 20px;
-    padding: 15px;
-    background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 5px;
-}
+
 
 .animation-control-row {
     display: flex;
@@ -488,12 +478,7 @@ body.dragging .splitter.dragging {
     color: var(--side-panel-text);
 }
 
-.canvas-controls {
-    margin-bottom: 20px;
-    padding: 15px;
-    background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 5px;
-}
+
 
 .canvas-control-row {
     display: flex;
