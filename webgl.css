@@ -1,0 +1,33 @@
+/* WebGL Tab - Blank Slate */
+
+/* Content area for WebGL tab */
+.content-area {
+    flex: 1;
+    background: #ffffff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+}
+
+.content-area h2 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.content-area p {
+    color: #666;
+    text-align: center;
+    font-size: 16px;
+}
+
+/* WebGL Canvas */
+#webglCanvas {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: #f8f9fa;
+} 

@@ -1,0 +1,964 @@
+/* CSS Custom Properties (Variables) for easy customization */
+:root {
+    /* Grid Configuration */
+    --grid-columns: 3;
+    --grid-rows: 3;
+    
+    /* Canvas Dimensions - Fixed size for reliable calculations */
+    --canvas-width: 800px;
+    --canvas-height: 600px;
+    
+    /* Dark Mode Color Palette - Ultra-minimalistic inspired by 099.supply */
+    --border-width: 1px;
+    --border-color: #2a2a2a;
+    --border-color-subtle: #1f1f1f;
+    --grid-gap: 0px;
+    --cell-bg-color: #161616;
+    --cell-hover-color: #1a1a1a;
+    --text-color: #e5e5e5;
+    --text-color-light: #888;
+    --text-color-subtle: #555;
+    --text-color-bright: #fff;
+    
+    /* Splitter Styling */
+    --splitter-size: 4px;
+    --splitter-color: #2a2a2a;
+    --splitter-hover-color: #333;
+    
+    /* Side Panel Styling - Dark 099-inspired design */
+    --side-panel-width: 260px;
+    --side-panel-bg: #0f0f0f;
+    --side-panel-text: #e5e5e5;
+    --side-panel-border: #2a2a2a;
+    --button-primary: #e5e5e5;
+    --button-hover: #fff;
+    --button-subtle: #1a1a1a;
+    --button-subtle-hover: #222;
+    --button-subtle-text: #e5e5e5;
+    --button-subtle-border: #2a2a2a;
+    
+    /* Slider Colors - Grayscale */
+    --slider-track: #2a2a2a;
+    --slider-thumb: #666;
+    --slider-thumb-hover: #888;
+    --slider-thumb-active: #aaa;
+    
+    /* Toggle Switch Colors - Grayscale */
+    --toggle-track: #2a2a2a;
+    --toggle-track-active: #666;
+    --toggle-thumb: #121212;
+    
+    /* Background Colors */
+    --bg-primary: #121212;
+    --bg-secondary: #181818;
+    --bg-tertiary: #1f1f1f;
+}
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 400;
+    background-color: var(--bg-primary);
+    overflow: auto;
+    user-select: none;
+    margin: 0;
+    padding: 0;
+    color: var(--text-color);
+    font-size: 13px;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+}
+
+/* Tab Navigation Styles */
+.tab-navigation {
+    display: flex;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0;
+    margin: 0;
+    position: relative;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    padding: 16px 24px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 400;
+    border-bottom: 1px solid transparent;
+    transition: all 0.15s ease;
+    outline: none;
+    color: var(--text-color-light);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.tab-btn:hover {
+    background: transparent;
+    color: var(--text-color);
+}
+
+.tab-btn.active {
+    background: transparent;
+    border-bottom-color: var(--text-color-bright);
+    color: var(--text-color-bright);
+}
+
+.header-credit {
+    position: absolute;
+    top: 50%;
+    right: 24px;
+    transform: translateY(-50%);
+    font-size: 11px;
+    color: var(--text-color-bright);
+    letter-spacing: 0.02em;
+    font-weight: 400;
+    opacity: 1;
+}
+
+/* Tab Content Styles */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Main Container Layout */
+.main-container {
+    display: flex;
+    height: 100vh;
+    background-color: var(--bg-primary);
+    overflow: hidden;
+}
+
+/* Side Panel */
+.side-panel {
+    width: var(--side-panel-width);
+    background-color: var(--side-panel-bg);
+    color: var(--side-panel-text);
+    padding: 24px 20px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-right: 1px solid var(--side-panel-border);
+    height: 100vh;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+/* Panel Header with Help Button */
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.panel-header h3 {
+    margin: 0;
+    color: var(--text-color-bright);
+    font-weight: 400;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    line-height: 24px; /* Match help button height for perfect alignment */
+}
+
+.help-btn {
+    width: 24px;
+    height: 24px;
+    background-color: var(--button-subtle);
+    color: var(--button-subtle-text);
+    border: 1px solid var(--button-subtle-border);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.help-btn:hover {
+    background-color: var(--button-subtle-hover);
+    border-color: #333;
+}
+
+.side-panel h3, .side-panel h4 {
+    margin-bottom: 16px;
+    color: var(--text-color-bright);
+    font-weight: 400;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+/* Override margin for h3 inside panel-header */
+.panel-header h3 {
+    margin-bottom: 0;
+}
+
+.upload-section {
+    margin-bottom: 32px;
+}
+
+.upload-btn, .control-btn {
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    background-color: var(--button-subtle);
+    color: var(--button-subtle-text);
+    border: 1px solid var(--button-subtle-border);
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 400;
+    transition: all 0.15s ease;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.upload-btn:hover, .control-btn:hover {
+    background-color: var(--button-subtle-hover);
+    border-color: #333;
+}
+
+.upload-info {
+    margin-top: 16px;
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.02);
+    border-radius: 2px;
+    font-size: 10px;
+    color: var(--text-color-light);
+    line-height: 1.5;
+    border: 1px solid var(--border-color-subtle);
+}
+
+.controls-section {
+    border-top: 1px solid var(--border-color);
+    padding-top: 24px;
+}
+
+/* Grid Controls */
+.grid-controls {
+    margin-bottom: 24px;
+    padding: 16px;
+    background-color: rgba(255, 255, 255, 0.01);
+    border-radius: 2px;
+    border: 1px solid var(--border-color-subtle);
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.grid-control-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.grid-control-row label {
+    min-width: 60px;
+    font-size: 10px;
+    color: var(--text-color);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.grid-btn {
+    width: 28px;
+    height: 28px;
+    background-color: var(--button-subtle);
+    color: var(--button-subtle-text);
+    border: 1px solid var(--button-subtle-border);
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.grid-btn:hover {
+    background-color: var(--button-subtle-hover);
+    border-color: #333;
+}
+
+.grid-btn:disabled {
+    background-color: #0a0a0a;
+    cursor: not-allowed;
+    opacity: 0.4;
+    color: var(--text-color-subtle);
+}
+
+#columnCount, #rowCount, #webglColumnCount, #webglRowCount {
+    min-width: 24px;
+    text-align: center;
+    font-weight: 400;
+    color: var(--text-color);
+    font-size: 11px;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+}
+
+/* Grid Container */
+.grid-container {
+    display: grid;
+    width: var(--canvas-width);
+    height: var(--canvas-height);
+    position: relative;
+    margin: 24px;
+    
+    grid-template-columns: repeat(var(--grid-columns), 1fr);
+    grid-template-rows: repeat(var(--grid-rows), 1fr);
+    
+    gap: var(--grid-gap);
+    border: var(--border-width) solid var(--border-color);
+    background-color: var(--bg-secondary);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02);
+    flex-shrink: 0;
+}
+
+/* Grid Content Area */
+.grid-content-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+    height: 100vh;
+}
+
+/* Grid Scaling Wrapper - handles auto-zoom-to-fit */
+.grid-scaling-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center center;
+    transition: transform 0.3s ease;
+}
+
+/* Grid Items */
+.grid-item {
+    background-color: var(--cell-bg-color);
+    border: var(--border-width) solid var(--border-color);
+    position: relative;
+    z-index: 1;
+    transition: background-color 0.15s ease;
+    overflow: hidden;
+    min-width: 0;
+    min-height: 0;
+}
+
+/* Cell Content Structure */
+.cell-content {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    pointer-events: none;
+    overflow: hidden;
+    min-width: 0;
+    min-height: 0;
+}
+
+.cell-label {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 2px 2px;
+    border-radius: 1px;
+    font-size: 9px;
+    font-weight: 400;
+    z-index: 5;
+    pointer-events: none;
+    letter-spacing: 0.05em;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+}
+
+.cell-label.hidden {
+    display: none;
+}
+
+/* Splitter Styles */
+.splitter {
+    position: absolute;
+    background-color: transparent;
+    transition: background-color 0.15s ease;
+    z-index: 100;
+    pointer-events: all;
+}
+
+.splitter:hover {
+    background-color: var(--splitter-color);
+}
+
+.splitter.dragging {
+    background-color: var(--splitter-hover-color);
+}
+
+.splitter.vertical {
+    width: var(--splitter-size);
+    height: 100%;
+    cursor: col-resize;
+    top: 0;
+}
+
+.splitter.horizontal {
+    width: 100%;
+    height: var(--splitter-size);
+    cursor: row-resize;
+    left: 0;
+}
+
+/* Drag feedback */
+body.dragging {
+    cursor: grabbing !important;
+}
+
+body.dragging * {
+    pointer-events: none !important;
+}
+
+body.dragging .splitter.dragging {
+    pointer-events: all !important;
+}
+
+/* Animation Controls */
+.animation-controls {
+    margin-bottom: 24px;
+    padding: 16px;
+    background-color: rgba(255, 255, 255, 0.01);
+    border-radius: 2px;
+    border: 1px solid var(--border-color-subtle);
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Common animation control row styling */
+.animation-control-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Common animation control label styling */
+.animation-control-row label {
+    min-width: 70px;
+    font-size: 10px;
+    color: var(--text-color);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.toggle-switch {
+    width: 36px;
+    height: 18px;
+    appearance: none;
+    background-color: var(--toggle-track);
+    border-radius: 9px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    border: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.toggle-switch:checked {
+    background-color: var(--toggle-track-active);
+    border-color: var(--toggle-track-active);
+}
+
+.toggle-switch::before {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background-color: var(--toggle-thumb);
+    border-radius: 50%;
+    top: 1px;
+    left: 1px;
+    transition: transform 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-switch:checked::before {
+    transform: translateX(18px);
+    background-color: var(--toggle-thumb);
+}
+
+.control-slider {
+    flex: 1;
+    height: 2px;
+    background: var(--slider-track);
+    border-radius: 1px;
+    outline: none;
+    cursor: pointer;
+    border: none;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.control-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--slider-thumb);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    border: 1px solid #121212;
+    transition: background-color 0.15s ease;
+}
+
+.control-slider::-webkit-slider-thumb:hover {
+    background: var(--slider-thumb-hover);
+}
+
+.control-slider::-webkit-slider-thumb:active {
+    background: var(--slider-thumb-active);
+}
+
+.control-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: var(--slider-thumb);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid #121212;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.15s ease;
+}
+
+.control-slider::-moz-range-thumb:hover {
+    background: var(--slider-thumb-hover);
+}
+
+.control-slider::-moz-range-thumb:active {
+    background: var(--slider-thumb-active);
+}
+
+/* Animation Controls Row */
+.animation-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Double gap between type and axis groups */
+    margin-bottom: 12px;
+}
+
+.animation-type-group {
+    display: flex;
+    gap: 2px;
+}
+
+.animation-axis-group {
+    display: flex;
+    gap: 2px;
+}
+
+/* Animation Type Controls */
+.type-btn {
+    width: 32px;
+    height: 20px;
+    padding: 0;
+    font-size: 7px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background-color: var(--bg-tertiary);
+    color: var(--text-color-light);
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.type-btn:hover {
+    border-color: #333;
+    background-color: var(--button-subtle-hover);
+}
+
+.type-btn.active {
+    background-color: var(--button-subtle);
+    border-color: var(--button-subtle-border);
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+/* Animation Axis Controls */
+.axis-btn {
+    width: 18px;
+    height: 20px;
+    padding: 0;
+    font-size: 8px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background-color: var(--bg-tertiary);
+    color: var(--text-color-light);
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.axis-btn:hover {
+    border-color: #333;
+    background-color: var(--button-subtle-hover);
+}
+
+.axis-btn.active {
+    background-color: var(--button-subtle);
+    border-color: var(--button-subtle-border);
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+/* Canvas Size Controls */
+.canvas-controls {
+    margin-bottom: 24px;
+    padding: 16px;
+    background-color: rgba(255, 255, 255, 0.01);
+    border-radius: 2px;
+    border: 1px solid var(--border-color-subtle);
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.canvas-control-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.canvas-control-row label {
+    min-width: 50px;
+    font-size: 10px;
+    color: var(--text-color);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.size-input {
+    width: 80px;
+    padding: 6px 8px;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+    color: var(--text-color);
+    font-size: 11px;
+    text-align: center;
+    font-weight: 400;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+}
+
+.size-input:focus {
+    outline: none;
+    border-color: var(--button-primary);
+    box-shadow: 0 0 0 1px rgba(229, 229, 229, 0.1);
+}
+
+.canvas-control-row span {
+    font-size: 10px;
+    color: var(--text-color-light);
+    opacity: 0.7;
+}
+
+/* Dropdown Styles */
+.dropdown-label {
+    display: block;
+    margin-bottom: 6px;
+    margin-top: 12px;
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-color);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.dropdown-select {
+    width: 100%;
+    padding: 12px 32px 12px 16px;
+    margin-bottom: 12px;
+    background-color: var(--bg-tertiary);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 400;
+    transition: all 0.15s ease;
+    letter-spacing: 0.01em;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23888' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+.dropdown-select:hover {
+    border-color: #333;
+}
+
+.dropdown-select:focus {
+    outline: none;
+    border-color: var(--button-primary);
+    box-shadow: 0 0 0 1px rgba(229, 229, 229, 0.1);
+}
+
+.dropdown-select option {
+    background-color: var(--bg-tertiary);
+    color: var(--text-color);
+    padding: 8px;
+    font-weight: 400;
+}
+
+/* Splitter visibility control */
+#image-inputs .grid-container.hide-splitters .splitter {
+    display: none !important;
+}
+
+#image-inputs .grid-container.hide-splitters .splitter:hover {
+    display: none !important;
+}
+
+/* Hide all grid lines when splitters are hidden */
+#image-inputs .grid-container.hide-splitters {
+    border: none !important;
+    gap: 0 !important; /* Ensure no gaps between cells */
+}
+
+#image-inputs .grid-container.hide-splitters .grid-item {
+    border: none !important;
+    margin: 0 !important; /* Ensure no margins */
+    padding: 0 !important; /* Ensure no padding */
+}
+
+#image-inputs .grid-container.hide-splitters .cell-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Ensure images fill complete cell area when borders are hidden */
+#image-inputs .grid-container.hide-splitters .image-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#image-inputs .grid-container.hide-splitters .image-wrapper img {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+}
+
+/* Sequence Info */
+.sequence-info {
+    margin-top: 16px;
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.01);
+    border-radius: 2px;
+    border: 1px solid var(--border-color-subtle);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#sequenceStatus {
+    display: block;
+    font-size: 9px;
+    color: var(--text-color-light);
+    text-align: center;
+}
+
+/* Export Controls */
+.export-controls {
+    margin-bottom: 24px;
+    padding: 16px;
+    background-color: rgba(255, 255, 255, 0.01);
+    border-radius: 2px;
+    border: 1px solid var(--border-color-subtle);
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.export-btn {
+    background-color: var(--button-primary);
+    color: var(--bg-primary);
+    border-color: var(--button-primary);
+}
+
+.export-btn:hover {
+    background-color: var(--button-hover);
+    border-color: var(--button-hover);
+}
+
+.export-btn:disabled {
+    background-color: var(--text-color-subtle);
+    color: var(--bg-primary);
+    border-color: var(--text-color-subtle);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Common animation slider value styling */
+.animation-slider-value {
+    min-width: 30px;
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-color);
+    font-weight: 400;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+    flex-shrink: 0;
+}
+
+/* Legacy selectors for backward compatibility */
+#frequencyValue, #amplitudeValue, #holdValue, #webglFrequencyValue, #webglAmplitudeValue {
+    min-width: 30px;
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-color);
+    font-weight: 400;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+    flex-shrink: 0;
+}
+
+/* Help Modal Styles */
+.help-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.help-modal.show {
+    display: flex;
+}
+
+.help-modal-content {
+    background-color: var(--side-panel-bg);
+    border: 1px solid var(--side-panel-border);
+    border-radius: 4px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.help-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.help-modal-header h3 {
+    margin: 0;
+    color: var(--text-color-bright);
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+}
+
+.help-close-btn {
+    width: 28px;
+    height: 28px;
+    background-color: var(--button-subtle);
+    color: var(--button-subtle-text);
+    border: 1px solid var(--button-subtle-border);
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.help-close-btn:hover {
+    background-color: var(--button-subtle-hover);
+    border-color: #333;
+}
+
+.help-modal-body {
+    padding: 20px 24px;
+}
+
+.help-section {
+    margin-bottom: 24px;
+}
+
+.help-section:last-child {
+    margin-bottom: 0;
+}
+
+.help-section h4 {
+    margin: 0 0 8px 0;
+    color: var(--text-color-bright);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+}
+
+.help-section p {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 12px;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+}
+
+.help-section p strong {
+    color: var(--text-color-bright);
+    font-weight: 400;
+} 

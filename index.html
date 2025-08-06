@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic CSS Grid Layout</title>
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="image-inputs.css">
+    <link rel="stylesheet" href="webgl.css">
+</head>
+<body>
+    <!-- Tab Navigation -->
+    <div class="tab-navigation">
+        <button class="tab-btn active" data-tab="image-inputs">Image Inputs</button>
+        <button class="tab-btn" data-tab="webgl">WebGL</button>
+        <div class="header-credit">MADE BY STUDIO-VIDEO</div>
+    </div>
+
+    <!-- Image Inputs Tab -->
+    <div class="tab-content active" id="image-inputs">
+        <div class="main-container">
+            <!-- Side Panel -->
+            <div class="side-panel">
+                <div class="panel-header">
+                    <h3>Image Upload</h3>
+                    <button class="help-btn" id="helpBtn" onclick="window.imageGridManager.showHelp()">?</button>
+                </div>
+                <div class="upload-section">
+                    <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                    
+                    <button class="upload-btn" onclick="document.getElementById('imageUpload').click()">
+                        Choose Image
+                    </button>
+                    
+                    <div class="sequence-info" id="sequenceInfo" style="display: none;">
+                        <span id="sequenceStatus">No sequence loaded</span>
+                    </div>
+                    
+                    <label for="imageFitMode" class="dropdown-label">Image Fit Mode:</label>
+                    <select id="imageFitMode" class="dropdown-select">
+                        <option value="fill">stretch</option>
+                        <option value="contain">fit</option>
+                        <option value="cover">fill</option>
+                        <option value="debug-corners">corner stretch</option>
+                        <option value="background">single stretch</option>
+
+                    </select>
+                </div>
+                
+                <div class="controls-section">
+                    <h4>Controls</h4>
+                    <button class="control-btn" id="clearAllBtn">Clear Image</button>
+                    
+                    <div class="grid-controls">
+                        <h4>Grid Structure</h4>
+                        <div class="grid-control-row">
+                            <label>Columns:</label>
+                            <button class="grid-btn" id="removeColumnBtn" onclick="window.imageGridManager.removeColumn()">-</button>
+                            <span id="columnCount">3</span>
+                            <button class="grid-btn" id="addColumnBtn" onclick="window.imageGridManager.addColumn()">+</button>
+                        </div>
+                        <div class="grid-control-row">
+                            <label>Rows:</label>
+                            <button class="grid-btn" id="removeRowBtn" onclick="window.imageGridManager.removeRow()">-</button>
+                            <span id="rowCount">3</span>
+                            <button class="grid-btn" id="addRowBtn" onclick="window.imageGridManager.addRow()">+</button>
+                        </div>
+                        <div class="grid-control-row">
+                            <label for="showSplitters">Show Dividers:</label>
+                            <input type="checkbox" id="showSplitters" class="toggle-switch" checked>
+                        </div>
+                    </div>
+                    
+                    <div class="animation-controls">
+                        <h4>Animation</h4>
+                        <div class="animation-control-row">
+                            <label for="animationToggle">Animate Grid:</label>
+                            <input type="checkbox" id="animationToggle" class="toggle-switch">
+                        </div>
+                        <div class="animation-controls-row">
+                            <div class="animation-type-group">
+                                <button class="type-btn active" data-type="noise">NOISE</button>
+                                <button class="type-btn" data-type="pulse">PULSE</button>
+                            </div>
+                            <div class="animation-axis-group">
+                                <button class="axis-btn active" data-axis="xy">XY</button>
+                                <button class="axis-btn" data-axis="x">X</button>
+                                <button class="axis-btn" data-axis="y">Y</button>
+                            </div>
+                        </div>
+                        <div class="animation-control-row">
+                            <label for="frequencySlider">Frequency:</label>
+                            <input type="range" id="frequencySlider" min="0.1" max="2" step="0.1" value="0.5" class="control-slider">
+                            <span id="frequencyValue" class="animation-slider-value">0.5</span>
+                        </div>
+                        <div class="animation-control-row">
+                            <label for="amplitudeSlider">Amplitude:</label>
+                            <input type="range" id="amplitudeSlider" min="0.1" max="1" step="0.1" value="0.3" class="control-slider">
+                            <span id="amplitudeValue" class="animation-slider-value">0.3</span>
+                        </div>
+                        <div class="animation-control-row" id="holdControlRow" style="display: none;">
+                            <label for="holdSlider">Hold:</label>
+                            <input type="range" id="holdSlider" min="0.1" max="2" step="0.1" value="0.5" class="control-slider">
+                            <span id="holdValue" class="animation-slider-value">0.5</span>
+                        </div>
+                    </div>
+                    
+                    <div class="canvas-controls">
+                        <h4>Canvas Size</h4>
+                        <div class="canvas-control-row">
+                            <label for="canvasWidth">Width:</label>
+                            <input type="text" id="canvasWidth" value="800" class="size-input">
+                            <span>px</span>
+                        </div>
+                        <div class="canvas-control-row">
+                            <label for="canvasHeight">Height:</label>
+                            <input type="text" id="canvasHeight" value="600" class="size-input">
+                            <span>px</span>
+                        </div>
+                        <button class="control-btn" id="applySizeBtn">Apply Size</button>
+                    </div>
+                    
+                    <div class="export-controls">
+                        <h4>Export</h4>
+                        <button class="control-btn export-btn" id="exportVideoBtn">Record MP4</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grid Content Area -->
+            <div class="grid-content-area">
+                <!-- Grid Scaling Wrapper -->
+                <div class="grid-scaling-wrapper" id="gridScalingWrapper">
+                    <!-- Grid Container -->
+                    <div class="grid-container" id="gridContainer">
+                    <div class="grid-item" data-cell="1">
+                        <div class="cell-content">
+                            <div class="image-wrapper">
+                                <!-- Image will be inserted here -->
+                            </div>
+                            <div class="cell-label">1</div>
+                        </div>
+                    </div>
+                    <div class="grid-item" data-cell="2">
+                        <div class="cell-content">
+                            <div class="image-wrapper">
+                                <!-- Image will be inserted here -->
+                            </div>
+                            <div class="cell-label">2</div>
+                        </div>
+                    </div>
+                    <div class="grid-item" data-cell="3">
+                        <div class="cell-content">
+                            <div class="image-wrapper">
+                                <!-- Image will be inserted here -->
+                            </div>
+                            <div class="cell-label">3</div>
+                        </div>
+                    </div>
+                    <div class="grid-item" data-cell="4">
+                        <div class="cell-content">
+                            <div class="image-wrapper">
+                                <!-- Image will be inserted here -->
+                            </div>
+                            <div class="cell-label">4</div>
+                        </div>
+                    </div>
+                    <div class="grid-item" data-cell="5">
+                        <div class="cell-content">
+                            <div class="image-wrapper">
+                                <!-- Image will be inserted here -->
+                            </div>
+                            <div class="cell-label">5</div>
+                        </div>
+                    </div>
+                    <div class="grid-item" data-cell="6">
+                        <div class="cell-content">
+                            <div class="image-wrapper">
+                                <!-- Image will be inserted here -->
+                            </div>
+                            <div class="cell-label">6</div>
+                        </div>
+                    </div>
+                    <div class="grid-item" data-cell="7">
+                        <div class="cell-content">
+                            <div class="image-wrapper">
+                                <!-- Image will be inserted here -->
+                            </div>
+                            <div class="cell-label">7</div>
+                        </div>
+                    </div>
+                    <div class="grid-item" data-cell="8">
+                        <div class="cell-content">
+                            <div class="image-wrapper">
+                                <!-- Image will be inserted here -->
+                            </div>
+                            <div class="cell-label">8</div>
+                        </div>
+                    </div>
+                    <div class="grid-item" data-cell="9">
+                        <div class="cell-content">
+                            <div class="image-wrapper">
+                                <!-- Image will be inserted here -->
+                            </div>
+                            <div class="cell-label">9</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Vertical Splitters (for column resizing) -->
+                    <div class="splitter vertical" data-index="0"></div>
+                    <div class="splitter vertical" data-index="1"></div>
+                    
+                    <!-- Horizontal Splitters (for row resizing) -->
+                    <div class="splitter horizontal" data-index="0"></div>
+                    <div class="splitter horizontal" data-index="1"></div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WebGL Tab -->
+    <div class="tab-content" id="webgl">
+        <div class="main-container">
+            <!-- Side Panel -->
+            <div class="side-panel">
+                <h3>WebGL Controls</h3>
+                <div class="upload-section">
+                    <div class="upload-info">
+                        <p>Ready to build step by step</p>
+                    </div>
+                </div>
+                
+                <div class="controls-section">
+                    <h4>Controls</h4>
+                    <!-- Controls will be added step by step -->
+                </div>
+            </div>
+            
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Content will be built step by step -->
+                <canvas id="webglCanvas" width="800" height="600"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Help Modal -->
+    <div class="help-modal" id="helpModal">
+        <div class="help-modal-content">
+            <div class="help-modal-header">
+                <h3>How to Use Grid Tool</h3>
+                <button class="help-close-btn" onclick="window.imageGridManager.closeHelp()">×</button>
+            </div>
+            <div class="help-modal-body">
+                <div class="help-section">
+                    <h4>📸 Upload Image</h4>
+                    <p>Click "Choose Image" to upload any image file. It will fill all grid cells.</p>
+                </div>
+                
+                <div class="help-section">
+                    <h4>📐 Adjust Grid</h4>
+                    <p>Use + and - buttons to add/remove columns and rows. Drag the gray lines to resize cells.</p>
+                </div>
+                
+                <div class="help-section">
+                    <h4>🎛️ Image Fit Modes</h4>
+                    <p><strong>Stretch:</strong> Image stretches to fill each cell<br>
+                    <strong>Fit:</strong> Image fits inside cell keeping proportions<br>
+                    <strong>Fill:</strong> Image fills cell completely<br>
+                    <strong>Corner Stretch:</strong> Advanced stretching for UI elements</p>
+                </div>
+                
+                <div class="help-section">
+                    <h4>✨ Animation</h4>
+                    <p>Turn on "Animate Grid" to make cells move smoothly. Adjust frequency (speed) and amplitude (movement amount).</p>
+                </div>
+                
+                <div class="help-section">
+                    <h4>📹 Export</h4>
+                    <p>Click "Record MP4" to save your grid as a high-quality video file.</p>
+                </div>
+                
+                <div class="help-section">
+                    <h4>🧹 Reset</h4>
+                    <p>Click "Clear Image" to remove all images and return to numbered grid.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="common.js"></script>
+    <script src="image-inputs.js"></script>
+    <script src="webgl.js"></script>
+</body>
+</html> 

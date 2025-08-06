@@ -1,0 +1,574 @@
+/* CSS Custom Properties (Variables) for easy customization */
+:root {
+    /* Grid Configuration */
+    --grid-columns: 3;
+    --grid-rows: 3;
+    
+    /* Canvas Dimensions - Fixed size for reliable calculations */
+    --canvas-width: 800px;
+    --canvas-height: 600px;
+    
+    /* Visual Styling */
+    --border-width: 2px;
+    --border-color: #333;
+    --grid-gap: 0px;
+    --cell-bg-color: #f0f0f0;
+    --cell-hover-color: #e0e0e0;
+    --text-color: #333;
+    
+    /* Splitter Styling */
+    --splitter-size: 8px;
+    --splitter-color: #007acc;
+    --splitter-hover-color: #005a9e;
+    
+    /* Side Panel Styling */
+    --side-panel-width: 300px;
+    --side-panel-bg: #2c2c2c;
+    --side-panel-text: #ffffff;
+    --button-primary: #007acc;
+    --button-hover: #005a9e;
+}
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #fff;
+    overflow: auto; /* Allow scrolling if content exceeds viewport */
+    user-select: none; /* Prevent text selection during drag */
+    margin: 0;
+    padding: 0;
+}
+
+/* Main Container Layout */
+.main-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
+
+/* Side Panel */
+.side-panel {
+    width: var(--side-panel-width);
+    background-color: var(--side-panel-bg);
+    color: var(--side-panel-text);
+    padding: 20px;
+    overflow-y: auto;
+    border-right: 2px solid #444;
+    min-height: 100vh;
+}
+
+.side-panel h3, .side-panel h4 {
+    margin-bottom: 15px;
+    color: var(--side-panel-text);
+}
+
+.upload-section {
+    margin-bottom: 30px;
+}
+
+.upload-btn, .control-btn {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    background-color: var(--button-primary);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.upload-btn:hover, .control-btn:hover {
+    background-color: var(--button-hover);
+}
+
+.upload-info {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.selected-cell-info {
+    margin-top: 8px;
+    padding: 8px;
+    background-color: rgba(0, 122, 204, 0.2);
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+.controls-section {
+    border-top: 1px solid #444;
+    padding-top: 20px;
+}
+
+.grid-controls {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+}
+
+.grid-control-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+
+.grid-control-row label {
+    min-width: 60px;
+    font-size: 14px;
+    color: var(--side-panel-text);
+}
+
+.grid-btn {
+    width: 30px;
+    height: 30px;
+    background-color: var(--button-primary);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.grid-btn:hover {
+    background-color: var(--button-hover);
+}
+
+.grid-btn:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+#columnCount, #rowCount {
+    min-width: 20px;
+    text-align: center;
+    font-weight: bold;
+    color: var(--side-panel-text);
+}
+
+/* Grid Container */
+.grid-container {
+    display: grid;
+    width: var(--canvas-width);
+    height: var(--canvas-height);
+    position: relative;
+    margin: 20px; /* Add some margin around the grid */
+    
+    /* Dynamic grid template using repeat() with CSS variables */
+    grid-template-columns: repeat(var(--grid-columns), 1fr);
+    grid-template-rows: repeat(var(--grid-rows), 1fr);
+    
+    gap: var(--grid-gap);
+    border: var(--border-width) solid var(--border-color);
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Grid Items */
+.grid-item {
+    background-color: var(--cell-bg-color);
+    border: var(--border-width) solid var(--border-color);
+    position: relative;
+    z-index: 1;
+    transition: background-color 0.2s ease;
+    overflow: hidden; /* Prevent content from extending beyond cell boundaries */
+    min-width: 0; /* Allow flex items to shrink below their content size */
+    min-height: 0; /* Allow flex items to shrink below their content size */
+}
+
+/* Cell Content Structure */
+.cell-content {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    pointer-events: none; /* Prevent blocking splitter interactions */
+    overflow: hidden; /* Ensure content stays within cell */
+    min-width: 0; /* Allow shrinking */
+    min-height: 0; /* Allow shrinking */
+}
+
+.image-wrapper {
+    flex: 1;
+    position: relative;
+    overflow: hidden; /* Crucial: prevent images from overflowing */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none; /* Prevent blocking splitter interactions */
+    width: 100%; /* Explicit width constraint */
+    height: 100%; /* Explicit height constraint */
+    min-width: 0; /* Allow shrinking */
+    min-height: 0; /* Allow shrinking */
+}
+
+.image-wrapper img {
+    max-width: 100%; /* Ensure image never exceeds wrapper width */
+    max-height: 100%; /* Ensure image never exceeds wrapper height */
+    width: 100%;
+    height: 100%;
+    object-fit: fill; /* Stretch to fill cell completely */
+    display: block;
+    pointer-events: none; /* Prevent blocking splitter interactions */
+}
+
+.image-wrapper.fit-contain img {
+    object-fit: contain; /* Maintain aspect ratio, fit within cell */
+}
+
+.image-wrapper.fit-cover img {
+    object-fit: cover;
+}
+
+/* Debug Corners Mode */
+.image-wrapper.debug-corners {
+    position: relative;
+}
+
+.image-wrapper.debug-corners img {
+    display: none; /* Hide the original image in debug mode */
+}
+
+.debug-corner-slice {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border: none;
+    z-index: 10;
+}
+
+.debug-corner-slice.top-left {
+    top: 0;
+    left: 0;
+}
+
+.debug-corner-slice.top-right {
+    top: 0;
+    right: 0;
+}
+
+.debug-corner-slice.bottom-left {
+    bottom: 0;
+    left: 0;
+}
+
+.debug-corner-slice.bottom-right {
+    bottom: 0;
+    right: 0;
+}
+
+.cell-label {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 5;
+    pointer-events: none; /* Prevent blocking splitter interactions */
+}
+
+.cell-label.hidden {
+    display: none;
+}
+
+/* .grid-item:hover {
+    background-color: var(--cell-hover-color);
+} */
+
+/* Splitter Styles */
+.splitter {
+    position: absolute;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+    z-index: 100; /* Higher z-index to ensure they're above everything */
+    pointer-events: all; /* Ensure splitters can receive mouse events */
+}
+
+.splitter:hover {
+    background-color: var(--splitter-color);
+}
+
+.splitter.dragging {
+    background-color: var(--splitter-hover-color);
+}
+
+/* Vertical Splitters (for column resizing) */
+.splitter.vertical {
+    width: var(--splitter-size);
+    height: 100%;
+    cursor: col-resize;
+    top: 0;
+}
+
+/* Horizontal Splitters (for row resizing) */
+.splitter.horizontal {
+    width: 100%;
+    height: var(--splitter-size);
+    cursor: row-resize;
+    left: 0;
+}
+
+/* Visual feedback during drag */
+body.dragging {
+    cursor: grabbing !important;
+}
+
+body.dragging * {
+    pointer-events: none !important;
+}
+
+body.dragging .splitter.dragging {
+    pointer-events: all !important;
+}
+
+/* 
+   To customize the grid, simply change the CSS variables at the top:
+   
+   Examples:
+   - For a 4x4 grid: change --grid-columns and --grid-rows to 4
+   - For a 2x5 grid: --grid-columns: 2; --grid-rows: 5;
+   - Change canvas size: --canvas-width: 1000px; --canvas-height: 800px;
+   - Add spacing: --grid-gap: 10px;
+   
+   Splitter customization:
+   - Change splitter size: --splitter-size: 12px;
+   - Change colors: --splitter-color and --splitter-hover-color
+   
+   Side panel customization:
+   - Change width: --side-panel-width: 250px;
+   - Canvas size is now independent of side panel width
+*/
+
+.dropdown-label {
+    display: block;
+    margin-bottom: 5px;
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--side-panel-text);
+}
+
+.dropdown-select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    background-color: var(--button-primary);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-select:hover {
+    background-color: var(--button-hover);
+}
+
+.dropdown-select:focus {
+    outline: 2px solid var(--button-hover);
+    outline-offset: 2px;
+}
+
+/* Style dropdown options */
+.dropdown-select option {
+    background-color: var(--side-panel-bg);
+    color: var(--side-panel-text);
+    padding: 8px;
+}
+
+.animation-controls {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+}
+
+.animation-control-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 10px;
+}
+
+.animation-control-row label {
+    min-width: 80px;
+    font-size: 14px;
+    color: var(--side-panel-text);
+}
+
+.toggle-switch {
+    width: 40px;
+    height: 20px;
+    appearance: none;
+    background-color: #666;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.toggle-switch:checked {
+    background-color: var(--button-primary);
+}
+
+.toggle-switch::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s ease;
+}
+
+.toggle-switch:checked::before {
+    transform: translateX(20px);
+}
+
+.control-slider {
+    flex: 1;
+    height: 6px;
+    background: #666;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+.control-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--button-primary);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.control-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--button-primary);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+#frequencyValue, #amplitudeValue {
+    min-width: 30px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--side-panel-text);
+}
+
+.canvas-controls {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+}
+
+.canvas-control-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 10px;
+}
+
+.canvas-control-row label {
+    min-width: 50px;
+    font-size: 14px;
+    color: var(--side-panel-text);
+}
+
+.size-input {
+    width: 80px;
+    padding: 6px 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    color: var(--side-panel-text);
+    font-size: 14px;
+    text-align: center;
+}
+
+.size-input:focus {
+    outline: none;
+    border-color: var(--button-primary);
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.canvas-control-row span {
+    font-size: 12px;
+    color: var(--side-panel-text);
+    opacity: 0.8;
+}
+
+/* Tab Navigation Styles */
+.tab-navigation {
+    display: flex;
+    background: #f0f0f0;
+    border-bottom: 2px solid #ddd;
+    padding: 0;
+    margin: 0;
+}
+
+.tab-btn {
+    background: #f0f0f0;
+    border: none;
+    padding: 12px 24px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.tab-btn:hover {
+    background: #e0e0e0;
+}
+
+.tab-btn.active {
+    background: white;
+    border-bottom-color: #007bff;
+    color: #007bff;
+}
+
+/* Tab Content Styles */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+ 
