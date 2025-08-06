@@ -34,6 +34,7 @@ class ImageGridManager extends BaseGridManager {
         this.setupAnimationControls();
         this.setupExportControls();
         this.setupHelpModal();
+        this.setupExportModal();
     }
     
     onActivate() {
@@ -1369,18 +1370,20 @@ class ImageGridManager extends BaseGridManager {
     setupCanvasSizeControls() {
         const canvasWidthInput = document.getElementById('canvasWidth');
         const canvasHeightInput = document.getElementById('canvasHeight');
-        const applySizeBtn = document.getElementById('applySizeBtn');
         
-        applySizeBtn.addEventListener('click', () => {
-            const width = parseInt(canvasWidthInput.value) || 800;
-            const height = parseInt(canvasHeightInput.value) || 600;
-            this.updateCanvasSize(width, height);
-        });
-        
+        // Auto-apply size changes when inputs change
         [canvasWidthInput, canvasHeightInput].forEach(input => {
+            input.addEventListener('input', () => {
+                const width = parseInt(canvasWidthInput.value) || 800;
+                const height = parseInt(canvasHeightInput.value) || 600;
+                this.updateCanvasSize(width, height);
+            });
+            
             input.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
-                    applySizeBtn.click();
+                    const width = parseInt(canvasWidthInput.value) || 800;
+                    const height = parseInt(canvasHeightInput.value) || 600;
+                    this.updateCanvasSize(width, height);
                 }
             });
         });
@@ -1623,9 +1626,24 @@ class ImageGridManager extends BaseGridManager {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 const helpModal = document.getElementById('helpModal');
+                const exportModal = document.getElementById('exportModal');
+                
                 if (helpModal.classList.contains('show')) {
                     this.closeHelp();
+                } else if (exportModal.classList.contains('show')) {
+                    this.closeExportModal();
                 }
+            }
+        });
+    }
+    
+    setupExportModal() {
+        const exportModal = document.getElementById('exportModal');
+        
+        // Close modal when clicking outside the content
+        exportModal.addEventListener('click', (e) => {
+            if (e.target === exportModal) {
+                this.closeExportModal();
             }
         });
     }
@@ -1636,21 +1654,64 @@ class ImageGridManager extends BaseGridManager {
             return;
         }
         
-        // Prompt user for duration
-        const duration = prompt('Enter recording duration in seconds:', '5');
+        this.showExportModal();
+    }
+    
+    showExportModal() {
+        const exportModal = document.getElementById('exportModal');
+        const durationInput = document.getElementById('recordingDuration');
         
-        if (duration === null) {
-            return; // User cancelled
-        }
+        // Reset input to default value
+        durationInput.value = '5';
         
-        const durationSeconds = parseFloat(duration);
+        // Show modal
+        exportModal.classList.add('show');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
         
-        if (isNaN(durationSeconds) || durationSeconds <= 0 || durationSeconds > 60) {
-            alert('Please enter a valid duration between 1 and 60 seconds.');
+        // Focus the input
+        setTimeout(() => {
+            durationInput.focus();
+            durationInput.select();
+        }, 100);
+        
+        // Handle Enter key to start recording
+        const handleEnterKey = (e) => {
+            if (e.key === 'Enter') {
+                this.startRecordingFromModal();
+                durationInput.removeEventListener('keydown', handleEnterKey);
+            }
+        };
+        durationInput.addEventListener('keydown', handleEnterKey);
+    }
+    
+    closeExportModal() {
+        const exportModal = document.getElementById('exportModal');
+        exportModal.classList.remove('show');
+        document.body.style.overflow = ''; // Restore scrolling
+    }
+    
+    startRecordingFromModal() {
+        const durationInput = document.getElementById('recordingDuration');
+        const duration = parseFloat(durationInput.value);
+        
+        // Validate duration
+        if (isNaN(duration) || duration <= 0 || duration > 60) {
+            // Show error state on input
+            durationInput.style.borderColor = '#ff4444';
+            durationInput.style.boxShadow = '0 0 0 1px rgba(255, 68, 68, 0.3)';
+            
+            // Reset error state after 2 seconds
+            setTimeout(() => {
+                durationInput.style.borderColor = '';
+                durationInput.style.boxShadow = '';
+            }, 2000);
+            
             return;
         }
         
-        this.startRecording(durationSeconds);
+        // Close modal and start recording
+        this.closeExportModal();
+        this.startRecording(duration);
     }
     
     startRecording(duration) {
