@@ -31,6 +31,7 @@ class ImageGridManager extends BaseGridManager {
         this.setupImageFitModeDropdown();
         this.setupGridControls();
         this.setupCanvasSizeControls();
+        this.setupBackgroundControls();
         this.setupAnimationControls();
         this.setupExportControls();
         this.setupHelpModal();
@@ -1490,6 +1491,103 @@ class ImageGridManager extends BaseGridManager {
         }
     }
     
+    setupBackgroundControls() {
+        const backgroundColorPicker = document.getElementById('canvasBackgroundColor');
+        const transparentBackgroundToggle = document.getElementById('transparentBackground');
+        const gridContainer = document.getElementById('gridContainer');
+        
+        // Initialize background state
+        this.isTransparentBackground = false;
+        this.currentBackgroundColor = '#181818';
+        
+        // Background color picker event listener
+        backgroundColorPicker.addEventListener('change', (e) => {
+            this.setBackgroundColor(e.target.value);
+        });
+        
+        // Transparent background toggle event listener
+        transparentBackgroundToggle.addEventListener('change', (e) => {
+            this.setTransparentBackground(e.target.checked);
+        });
+        
+        // Initialize with default values
+        this.setBackgroundColor(this.currentBackgroundColor);
+        this.setTransparentBackground(false);
+    }
+    
+    setBackgroundColor(color) {
+        this.currentBackgroundColor = color;
+        
+        // Update CSS custom properties for both grid container and individual cells
+        document.documentElement.style.setProperty('--canvas-bg-color', color);
+        document.documentElement.style.setProperty('--cell-bg-color', color);
+        
+        // Update color picker if called programmatically
+        const backgroundColorPicker = document.getElementById('canvasBackgroundColor');
+        if (backgroundColorPicker.value !== color) {
+            backgroundColorPicker.value = color;
+        }
+        
+        // If not transparent, apply the color to both container and cells
+        if (!this.isTransparentBackground) {
+            const gridContainer = document.getElementById('gridContainer');
+            const gridItems = gridContainer.querySelectorAll('.grid-item');
+            
+            gridContainer.style.backgroundColor = color;
+            
+            // Update all individual cell backgrounds
+            gridItems.forEach(cell => {
+                cell.style.backgroundColor = color;
+            });
+        }
+        
+        console.log(`Background color changed to: ${color}`);
+    }
+    
+    setTransparentBackground(isTransparent) {
+        this.isTransparentBackground = isTransparent;
+        const gridContainer = document.getElementById('gridContainer');
+        const gridItems = gridContainer.querySelectorAll('.grid-item');
+        const transparentBackgroundToggle = document.getElementById('transparentBackground');
+        
+        if (isTransparent) {
+            // Add transparent background class (shows checkered pattern)
+            gridContainer.classList.add('transparent-background');
+            gridContainer.style.backgroundColor = 'transparent';
+            
+            // Make all individual cells transparent too
+            gridItems.forEach(cell => {
+                cell.style.backgroundColor = 'transparent';
+            });
+        } else {
+            // Remove transparent background class and restore color
+            gridContainer.classList.remove('transparent-background');
+            gridContainer.style.backgroundColor = this.currentBackgroundColor;
+            
+            // Restore color to all individual cells
+            gridItems.forEach(cell => {
+                cell.style.backgroundColor = this.currentBackgroundColor;
+            });
+        }
+        
+        // Update toggle if called programmatically
+        if (transparentBackgroundToggle.checked !== isTransparent) {
+            transparentBackgroundToggle.checked = isTransparent;
+        }
+        
+        console.log(`Transparent background: ${isTransparent ? 'enabled' : 'disabled'}`);
+    }
+    
+    reapplyBackgroundSettings() {
+        // Reapply current background settings to ensure consistency after grid changes
+        if (this.currentBackgroundColor) {
+            this.setBackgroundColor(this.currentBackgroundColor);
+        }
+        if (this.isTransparentBackground !== undefined) {
+            this.setTransparentBackground(this.isTransparentBackground);
+        }
+    }
+    
     setupAnimationControls() {
         const animationToggle = document.getElementById('animationToggle');
         const frequencySlider = document.getElementById('frequencySlider');
@@ -1647,6 +1745,8 @@ class ImageGridManager extends BaseGridManager {
         
         setTimeout(() => {
             this.updateSplitterPositions();
+            // Reapply background settings after grid structure changes
+            this.reapplyBackgroundSettings();
         }, 200);
     }
     
@@ -1668,6 +1768,13 @@ class ImageGridManager extends BaseGridManager {
                     <div class="cell-label">${i}</div>
                 </div>
             `;
+            
+            // Apply current background color to new cells
+            if (this.isTransparentBackground) {
+                gridItem.style.backgroundColor = 'transparent';
+            } else if (this.currentBackgroundColor) {
+                gridItem.style.backgroundColor = this.currentBackgroundColor;
+            }
             
             this.gridContainer.appendChild(gridItem);
         }

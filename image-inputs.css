@@ -13,6 +13,12 @@
     height: 100%;
     min-width: 0;
     min-height: 0;
+    background: transparent; /* Ensure transparent background to show cell color through */
+}
+
+/* Ensure cell content is transparent to show background color */
+.cell-content {
+    background: transparent !important;
 }
 
 .image-wrapper img {
@@ -23,6 +29,7 @@
     object-fit: fill; /* Default stretch behavior */
     display: block;
     pointer-events: none;
+    background: transparent; /* Important for transparent PNG support */
 }
 
 .image-wrapper.fit-contain img {
